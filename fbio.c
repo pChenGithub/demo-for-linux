@@ -4,7 +4,9 @@
 #include <fcntl.h>
 #include <linux/fb.h>
 #include <sys/mman.h>
-
+#include <unistd.h>
+#include <sys/ioctl.h>
+#include <stdlib.h>
 
 int main(int argc, char *argv[] ){
     int fd;
@@ -56,17 +58,26 @@ int main(int argc, char *argv[] ){
 
     for(i=0;i<height*with;i++)
     {
+#if 0
+	// RGB
         if(i<with*height/3){
-                *pp = 0x000000ff;
+                *pp = 0xff0000ff;
         }else if(i<2*with*height/3){
-                *pp = 0x0000ff00;
+                *pp = 0xff00ff00;
         }else{
-                *pp = 0x00ff0000;
+                *pp = 0xffff0000;
         }
-                pp++;
+#else
+	// WHITE
+	*pp = 0xffffffff;
+#endif
+	pp++;
     }
 
     munmap((void*)p, screensize);
     close(fd);
+
+	system("echo 100 > /sys/class/backlight/pwm-backlight/brightness");
+
     return 0;
 }
